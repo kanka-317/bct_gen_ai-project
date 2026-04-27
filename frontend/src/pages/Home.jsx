@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ShieldCheck, Zap, Brain } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Zap, Brain, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { translations } from '../utils/translations';
 
