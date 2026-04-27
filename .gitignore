@@ -1,0 +1,14 @@
+.env
+*.pyc
+*.pyo
+__pycache__/
+backend/__pycache__/
+backend/users_db.json
+
+frontend/node_modules/
+frontend/dist/
+frontend/npm
+
+.DS_Store
+.idea/
+.vscode/
