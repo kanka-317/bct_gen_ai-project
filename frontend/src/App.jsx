@@ -12,6 +12,7 @@ import Chat from './pages/Chat';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Settings from './pages/Settings';
+import Analytics from './pages/Analytics';
 
 const ProtectedRoute = ({ children }) => {
   const user = localStorage.getItem('user');
@@ -70,6 +71,7 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+          <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
         </Route>
       </Routes>
     </Router>

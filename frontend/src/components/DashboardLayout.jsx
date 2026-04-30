@@ -17,6 +17,7 @@ import {
   Menu,
   X,
   Clock,
+  BarChart3,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { translations } from '../utils/translations';
@@ -57,6 +58,7 @@ const DashboardLayout = ({ themeContext }) => {
     { name: 'Dashboard Overview', path: '/dashboard', icon: <LayoutGrid className="h-4 w-4" />, desc: 'View your health summary and stats' },
     { name: 'AI Doctor Chat', path: '/ai-doctor', icon: <MessageSquare className="h-4 w-4" />, desc: 'Consult with our advanced AI medical assistant' },
     { name: 'Disease Diagnosis', path: '/diagnose', icon: <Users className="h-4 w-4" />, desc: 'Run medical diagnostic analysis' },
+    { name: 'Health Analytics', path: '/analytics', icon: <BarChart3 className="h-4 w-4" />, desc: 'View global health trends and model insights' },
     { name: 'Settings & Profile', path: '/settings', icon: <Settings className="h-4 w-4" />, desc: 'Manage your account and preferences' },
     { name: 'About MediScan AI', path: '/about', icon: <Info className="h-4 w-4" />, desc: 'Learn more about our mission and technology' },
     { name: 'Contact Support', path: '/contact', icon: <MessageCircle className="h-4 w-4" />, desc: 'Get in touch with our team' },
@@ -210,6 +212,7 @@ const DashboardLayout = ({ themeContext }) => {
     '/about': t.aboutTitle,
     '/contact': t.contactTitle,
     '/results': 'Diagnosis Results',
+    '/analytics': 'Health Analytics',
   };
 
   const pageTitle = routeTitles[location.pathname] || t.overviewTitle;
@@ -220,6 +223,7 @@ const DashboardLayout = ({ themeContext }) => {
       items: [
         { icon: LayoutGrid, path: '/dashboard', label: t.navHome },
         { icon: Stethoscope, path: '/diagnose', label: t.navDiagnose },
+        { icon: BarChart3, path: '/analytics', label: 'Analytics' },
         { icon: MessageSquare, path: '/ai-doctor', label: t.navAiDoctor },
       ],
     },

@@ -164,6 +164,33 @@ function ResultDashboard() {
                   <div className={`text-3xl font-black mb-4 ${isDarkMode ? 'text-white' : 'text-indigo-900'}`}>
                     {result.primary_diagnosis}
                   </div>
+                  
+                  {/* Confidence Gauge */}
+                  <div className="relative h-24 w-full flex items-center justify-center mb-4">
+                    <svg className="w-full h-full" viewBox="0 0 100 50">
+                      <path
+                        d="M 10 45 A 40 40 0 0 1 90 45"
+                        fill="none"
+                        stroke={isDarkMode ? '#ffffff10' : '#00000005'}
+                        strokeWidth="8"
+                        strokeLinecap="round"
+                      />
+                      <motion.path
+                        d="M 10 45 A 40 40 0 0 1 90 45"
+                        fill="none"
+                        stroke="#5E5CE6"
+                        strokeWidth="8"
+                        strokeLinecap="round"
+                        initial={{ pathLength: 0 }}
+                        animate={{ pathLength: (result.top_possibilities?.[0]?.probability || 95) / 100 }}
+                        transition={{ duration: 1.5, ease: "easeOut" }}
+                      />
+                      <text x="50" y="40" textAnchor="middle" className={`text-[10px] font-black fill-indigo-500`}>
+                        {result.top_possibilities?.[0]?.probability || 95}%
+                      </text>
+                    </svg>
+                  </div>
+
                   <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 text-emerald-500 rounded-lg text-[10px] font-black uppercase tracking-widest">
                     <CheckCircle2 className="w-3.5 h-3.5" />
                     {t.mlConfirmed}
