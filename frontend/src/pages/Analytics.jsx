@@ -1,12 +1,12 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   PieChart, Pie, Cell, AreaChart, Area, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
 } from 'recharts';
 import { 
   TrendingUp, Activity, PieChart as PieChartIcon, 
-  BarChart3, Shield, Zap, Info, Filter, Download
+  BarChart3, Shield, Zap, Info, Filter, Download, ChevronDown
 } from 'lucide-react';
 import { useOutletContext } from 'react-router-dom';
 import { translations } from '../utils/translations';
@@ -14,9 +14,11 @@ import { translations } from '../utils/translations';
 const Analytics = () => {
   const [isDarkMode, , language] = useOutletContext();
   const t = translations[language] || translations.English;
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const [minCases, setMinCases] = useState(0);
 
   // Sample data based on Symptom2Disease dataset characteristics
-  const prevalenceData = [
+  const rawPrevalenceData = [
     { name: 'Psoriasis', cases: 120, severity: 65 },
     { name: 'Varicose Veins', cases: 95, severity: 40 },
     { name: 'Typhoid', cases: 150, severity: 85 },
@@ -25,6 +27,26 @@ const Analytics = () => {
     { name: 'Diabetes', cases: 110, severity: 75 },
     { name: 'Hypertension', cases: 105, severity: 70 },
   ];
+
+  const prevalenceData = rawPrevalenceData.filter(d => d.cases >= minCases);
+
+  const handleExport = () => {
+    const headers = ['Disease Name', 'Active Cases', 'Severity Score (%)'];
+    const csvContent = [
+      headers.join(','),
+      ...prevalenceData.map(d => `${d.name},${d.cases},${d.severity}`)
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `Health_Analytics_Report_${new Date().toLocaleDateString()}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const labTrendData = [
     { month: 'Jan', wbc: 7200, fbs: 95, temp: 98.6 },
@@ -55,17 +77,64 @@ const Analytics = () => {
   return (
     <div className="space-y-8 pb-10">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative">
         <div>
           <h1 className={`text-3xl font-black ${titleClass}`}>Health Analytics Engine</h1>
           <p className="text-slate-500 font-medium">Real-time epidemiological data synthesis & model insights</p>
         </div>
         <div className="flex items-center gap-3">
-          <button className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border ${isDarkMode ? 'bg-white/5 border-white/10 text-slate-300' : 'bg-white border-slate-200 text-slate-600'} font-bold text-sm hover:scale-105 transition-all`}>
-            <Filter className="w-4 h-4" />
-            Filter Data
-          </button>
-          <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-sm shadow-lg shadow-indigo-500/30 hover:scale-105 transition-all">
+          <div className="relative">
+            <button 
+              onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border ${isDarkMode ? 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'} font-bold text-sm transition-all shadow-sm`}
+            >
+              <Filter className="w-4 h-4" />
+              Filter Data
+              <ChevronDown className={`w-4 h-4 transition-transform ${showFilterDropdown ? 'rotate-180' : ''}`} />
+            </button>
+
+            <AnimatePresence>
+              {showFilterDropdown && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  className={`absolute right-0 mt-3 w-64 p-4 rounded-2xl border z-50 ${isDarkMode ? 'glass-dark border-white/10' : 'bg-white border-slate-200 shadow-xl'}`}
+                >
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Filter by Cases</p>
+                  <div className="space-y-4">
+                    <div>
+                      <div className="flex justify-between mb-2">
+                        <span className="text-xs font-bold text-slate-500">Min. Cases</span>
+                        <span className="text-xs font-black text-indigo-500">{minCases}</span>
+                      </div>
+                      <input 
+                        type="range" 
+                        min="0" 
+                        max="150" 
+                        value={minCases}
+                        onChange={(e) => setMinCases(parseInt(e.target.value))}
+                        className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                      />
+                    </div>
+                    <div className="pt-2 border-t border-slate-100/10">
+                      <button 
+                        onClick={() => { setMinCases(0); setShowFilterDropdown(false); }}
+                        className="w-full py-2 text-xs font-bold text-slate-500 hover:text-indigo-500 transition-colors"
+                      >
+                        Reset Filters
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <button 
+            onClick={handleExport}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-sm shadow-lg shadow-indigo-500/30 hover:scale-105 hover:bg-indigo-700 transition-all active:scale-95"
+          >
             <Download className="w-4 h-4" />
             Export Report
           </button>
